@@ -49,7 +49,7 @@ NULL - if the operation was not successful
 
 ListNode *insertToList(ListNode **head, PatientInfo *patient)
 
-{
+{	
 	ListNode *p = NULL;
 	
 	// allocate memory for new node
@@ -93,6 +93,13 @@ NULL - if the operation was not successful
 
 ListNode *insertAfter(ListNode *node, PatientInfo *patient)
 {
+	// if empty list return NULL
+	if (node == NULL) 
+	{
+	printf("here\n\n");
+	return NULL;
+	}
+
 	ListNode *p = NULL;
 	
 	// allocate memory for new node
@@ -103,10 +110,19 @@ ListNode *insertAfter(ListNode *node, PatientInfo *patient)
 	p->patient = *patient;
 	
 	// connect list to new node
-	p->next = node->next;
+	if (node == NULL)
+	{
+		p->next = NULL;
+		node = p;
+	}
+	else 
+	{
+		p->next = node->next;
 	
-	// connect new node to list
-	node->next = p;
+
+		// connect new node to list
+		node->next = p;
+	}
 
 	return p;
  
@@ -136,9 +152,24 @@ NULL - if no node was found or list empty
 ListNode * searchFirstPatientByPriority(ListNode *head, unsigned char priority, PatientInfo *patient)
 
 {
-	// add code 
+	ListNode *p = NULL;
+	p = head; 
+	// iterate through list
+	while (p != NULL)
+	{
+			// if current node's patient's priority == priority, return a pointer to current node 
+			if ((p->patient).priorityLevel == priority)
+			{
+				//printPatient(&(p->patient));
+				*patient = p->patient;
+				return p;
+			}
+		p = p->next;
+	}
+	return NULL;
+
 	
-   ListNode *p = NULL;
+  
 
 
 }
