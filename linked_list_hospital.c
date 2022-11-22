@@ -352,28 +352,52 @@ its information.
 int retrieveNextPatientByCriteria(ListNode **head, int (*comparePatients)(PatientInfo *p1, PatientInfo *p2, int currentTime), int currentTime, PatientInfo *patient)
 
 {
+	ListNode *currNode = NULL, *prevNode = NULL, *highestPriority = NULL, *nodeBeforeHighestPriority = NULL;
+	prevNode = *head, highestPriority = *head;
+	currNode = (*head)->next;
+    
 
-    // add code 
- 
-
-    // check if list is empty
- 
-
- 	// otherwise 
- 	// find next patient (similar to find a maximum value)
- 
+	if (head == NULL || *head == NULL) return 1;	// if list does not exist or is empty return 1
 
 
-    // remove next patient from the list
-    // if it is first node 
-
-
-    // else it is somewhere in the list
-
-  
- 
+	while (currNode != NULL)	// iterate through list
+	{
+		
+		if(comparePatients(&(highestPriority->patient), &(currNode->patient), currentTime) < 0) 
+		{
+			highestPriority = currNode; // if highest priority patient (initially the first patient in list) is less than the current patient, set highest priority to curr patient
+			nodeBeforeHighestPriority = prevNode; // keep track of node before highest priority patient for deletion purposes
+			//printf("\n%d\n", highestPriority->patient.priorityLevel + 2*(currentTime - highestPriority->patient.arrivalTime));
+		}
+		// update prev and curr nodes	
+		prevNode = currNode;	
+		currNode = currNode->next;
+		
+	}	
+			
+	if (highestPriority == *head) // if highest priority patient is the head of the list
+	{
+		*patient = highestPriority->patient; // copy data to output
+		*head = highestPriority->next;	// move head
+		highestPriority->next = NULL;	// disconnect head from list
+		free(highestPriority);		// deallocate memory
+		highestPriority = NULL;	// set pointer to NULL
+		free(prevNode);	
+		prevNode = NULL;
+	}
+			
+	else	// if highest priority patient is not the head of the list
+	{
+	
+		*patient = highestPriority->patient;	// copy data to output
+		nodeBeforeHighestPriority->next = highestPriority->next;	// move head
+		highestPriority->next = NULL;	// disconnect from list
+		free(highestPriority);		// deallocate memory
+		currNode = NULL;	// set pointer to NULL
+	}
+		
+		return 0;
 }
-
 
 
 /************************************************************************/
@@ -462,8 +486,19 @@ the number of patients with a matching priority
 
 int countPatients(ListNode *head, unsigned char priority)
 {
-	// add code 
-  
+	
+	if (head == NULL) return 0;
+
+	int count = 0;
+	while (head != NULL)
+	{
+
+		if (head->patient.priorityLevel == priority) count++;
+
+		head = head->next;
+	}
+	
+	return count;
 }
 
 
