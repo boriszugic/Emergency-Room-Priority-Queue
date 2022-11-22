@@ -96,7 +96,6 @@ ListNode *insertAfter(ListNode *node, PatientInfo *patient)
 	// if empty list return NULL
 	if (node == NULL) 
 	{
-	printf("here\n\n");
 	return NULL;
 	}
 
@@ -160,7 +159,6 @@ ListNode * searchFirstPatientByPriority(ListNode *head, unsigned char priority, 
 			// if current node's patient's priority == priority, return a pointer to current node 
 			if ((p->patient).priorityLevel == priority)
 			{
-				//printPatient(&(p->patient));
 				*patient = p->patient;
 				return p;
 			}
@@ -194,7 +192,22 @@ NULL - if no node was found or list empty
 
 ListNode * searchNextPatient(ListNode *head, int (*findPatient)(PatientInfo *), PatientInfo *patient)
 {
-	// add code 
+	ListNode *p = NULL;
+	p = head; 
+	// iterate through list
+	while (p != NULL)
+	{
+			// if current node's patient's priority == priority, return a pointer to current node 
+			if (findPatient(&(p->patient)) == 0) 
+			{
+				*patient = p->patient;
+				printPatient(patient);
+				return p;
+			}
+		p = p->next;
+	}
+	return NULL;
+
  
 
 
@@ -376,9 +389,15 @@ the number of registered patients
 
 int numPatientsInEmergency(ListNode *head)
 {
-	// add code 
+	int count = 0;
+	ListNode *currNode = head;
+	while (currNode != NULL)
+	{
+		count++;
+		currNode = currNode->next;
+	}
 
- 
+	return count;
 
 }
 

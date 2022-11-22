@@ -48,5 +48,6 @@ typedef struct patientInfo {
 void printPatient(PatientInfo *patient);
 int comparePriotities(PatientInfo *p1, PatientInfo *p2);
 int comparePatients(PatientInfo *p1, PatientInfo *p2, int currentTime);
+int findPatient(PatientInfo *p);
 
 #endif
