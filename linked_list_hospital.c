@@ -201,11 +201,11 @@ ListNode * searchNextPatient(ListNode *head, int (*findPatient)(PatientInfo *), 
 			if (findPatient(&(p->patient)) == 0) 
 			{
 				*patient = p->patient;
-				printPatient(patient);
 				return p;
 			}
 		p = p->next;
 	}
+	
 	return NULL;
 
  
@@ -236,9 +236,22 @@ return
 int deleteFromList(ListNode **head, PatientInfo *patient)
 
 {
-
-    // add code
-
+	ListNode *temp = NULL;
+	temp = *head;
+	if (head == NULL || *head == NULL) return 1;
+	if ((*head)->next == NULL) 
+	{
+		*patient = temp->patient;
+		*head = NULL;
+		return 0;
+	}
+	
+	*patient = temp->patient;
+	*head = temp->next;
+	
+	free(temp);
+	temp = NULL;
+	return 0;
 
 
 }
@@ -269,10 +282,42 @@ return
 int retrieveNextPatientByPriority(ListNode **head, unsigned char priority, PatientInfo *patient)
 
 {
+	ListNode *currNode = NULL, *prevNode = NULL;
+	currNode = *head;
+    
+	if (head == NULL || *head == NULL) return 1;
 
-    // add code 
-    int rc = 0;
- 
+
+	while (currNode != NULL)
+	{
+		
+		if(currNode->patient.priorityLevel == priority) // if note is found
+		{
+			if (currNode == *head) 
+			{
+				*patient = currNode->patient; // copy data to output
+				*head = currNode->next;	// move head
+				currNode->next = NULL;	
+				free(currNode);
+				currNode = NULL;	// deallocate memory 
+				free(prevNode);
+				prevNode = NULL;
+			}
+			else
+			{
+				*patient = currNode->patient;	// copy data to output
+				prevNode->next = currNode->next;	// move head
+				currNode->next = NULL;	
+				free(currNode);	
+				currNode = NULL;	// deallocate memory 
+			}
+		return 0;
+		}
+		currNode = currNode->next;
+		prevNode = currNode;
+	}
+	
+	return 1;
 }
 
 /***************************************************************/
