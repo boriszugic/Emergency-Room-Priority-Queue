@@ -412,8 +412,18 @@ head - the head of the list
 
 void deleteList(ListNode **head)
 {
-	// add code 
+	ListNode *currNode = NULL;
+	currNode = *head;
+	while (currNode != NULL)
+	{
 
+		*head = (*head)->next;
+		free(currNode);
+		currNode = *head;
+		
+	}
+	
+	free(head);
 
 }
 
@@ -608,9 +618,11 @@ head - the head of the list
 
 void printListReverse(ListNode *head, void (*myPrint)(PatientInfo *patient))
 {
-	// add code 
+	if (head == NULL) return;
  
-    
+	printListReverse(head->next, printPatient);
+	myPrint(&(head->patient));
+	
  
 }
 
@@ -640,11 +652,16 @@ the head of the new list
 
 ListNode *reverse(ListNode *head)
 
-
 {
+	
+	if (head == NULL || head->next == NULL) return head;
+	
 
-	/* Add code */
+	ListNode *temp = reverse(head->next);
+	head->next->next = head;
+	head->next = NULL;
 
+	return temp;
 
 }
 

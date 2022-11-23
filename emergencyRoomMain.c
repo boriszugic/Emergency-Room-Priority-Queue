@@ -2,17 +2,13 @@
 /*
 Description:
 
-This is an exmaple of a test program that you should write to test your code.  
-The testing is not complete because it checks only a subset of the required functionality
-and not all aspects of it. 
-
-This code will not be used by the TAs to test your code.
+	Program for testing linked_list_hospital.h functions
 
 
 Revisions:
-Doron Nussbaum 2022  File created
 
- Copyright Doron Nussbaum 2022
+	Doron Nussbaum 2022  File created
+	Boris Zugic 2022 Everything else
 
 */
 
@@ -27,12 +23,19 @@ Doron Nussbaum 2022  File created
 #include "patient.h"
 #include "linked_list_hospital.h"
 
+
+/************************************************************************/
+// DEFINES
+
 #define NUMBER_OF_TEST_PATIENTS 20
-
-
 #define CONTINUE {printf("hit <cr> to continue \n"); getchar();}
 
+
+/*********************************************************************/
+// FUNCTION PROTOTYPES
+
 int populatePatient(int arrivalTime, PatientInfo *patient);
+
 
 
 int main(int argc, char* argv[])
@@ -46,87 +49,106 @@ int main(int argc, char* argv[])
     static int initRand = 0;	
     static int arrivalTime = 1;
 
-
-
-
 	if (!initRand) {
 		srand(15857);
 		initRand ++;
 	}
 
-
- 	// creating a list
+	
+ 	// creating and printing each patient in list
 	for (i = 0; i < NUMBER_OF_TEST_PATIENTS; i++) {
-	// add code for testing
 		populatePatient(arrivalTime, &patient);
 		printPatient(&patient);
 		insertToList(&patientsList, &patient);
 		arrivalTime++;
 	}
 
-
 	// testing printing the list forward and in reverse
-	printf("\n\n--------printing the list-------- \n\n");
+	printf("\n\nPrinting list:\n\n");
 
-	printList(patientsList,printPatient);
+	printList(patientsList, printPatient);
 
-	printf("printing the list in reverse\n");
+	printf("\n\nPrinting list in reverse:\n\n");
 
 	printListReverse(patientsList,printPatient);
 
 	// checking number of patients by priority
-	printf("\nprinting the patients by priorityLevel \n");
+	printf("\n\nPrinting the patients by priorityLevel:\n\n");
 	for (i = 0; i < 10; i++) {
 		ListNode * p = searchFirstPatientByPriority(patientsList, i, &patient);
-		if (p == NULL) printf("no patient with priority %d\n",i);
+		if (p == NULL) printf("No patient with priority %d\n",i);
 		else printPatient(&patient);
-
 	}
+	
+	
+	printf("\n\nSearching for first patient with matching criteria...\n\n");
+	searchNextPatient(patientsList, findPatient, &patient);
+	printPatient(&patient);
 
+	printf("\n\nRemoving first patient...\n\n");
+	if(deleteFromList(&patientsList, &patient) == 0) printf("Deletion successful. Removed patient:\n");
+	else printf("Deletion unsuccessful.");
+	printPatient(&patient);
+	
 	// testing  counting 
-	printf("\n number of patients in emergency room = %d\n", numPatientsInEmergency(patientsList));
+	printf("\nNumber of patients in emergency room = %d\n", numPatientsInEmergency(patientsList));
 
-	printf("\ncounting patients by priority \n");
+	printf("\n\nCounting patients by priority\n\n");
 	for (i = 0; i < 10; i++) {
 		printf("There are %d patients with priority %d \n", countPatients(patientsList, i), i);
 	}
 
 	// testing priority queue by higher priority
-	printf("Patient to be treated by maximum priority\n ");
+	printf("\n\nPatient to be treated next by maximum priority\n\n");
+	retrieveNextPatientByCriteria(&patientsList, comparePatients, arrivalTime, &patient);
+	printPatient(&patient);
+	/*
 
 	for (i = 0; i <5; i++) {
 		arrivalTime++;
 		rc = retrieveNextPatientByCriteria(&patientsList, comparePatients, arrivalTime, &patient);
 		if (rc == 1) {
-			printf(" no more patients \n");
+			printf("No more patients \n");
 			break;
 		} else {
-			printf("next patient to be treated \n ");
+			printf("Next patient to be treated:\n ");
 			printPatient(&patient);
 		}
 	}
-
+	*/
+	/*
 	// testing priority queeue by highest priority level
-	printf("Patient to be treated by priority\n ");
+	printf("Patient to be treated by priority:\n ");
 
 	for (i = 9; i >= 0; i--) {
 		rc = retrieveNextPatientByPriority(&patientsList, i, &patient);
-		//printf("priority = %d rc = %d \n", i, rc);
+		printf("Priority = %d rc = %d \n", i, rc);
 		if (rc == 0) break;
 	}
 	if (rc == 0) { 
 		printPatient(&patient);
 	} else {
-		printf("no patients to be treated \n");
+		printf("No patients to be treated \n");
 	}
+	*/
+	
+	// testing the list reverse function
 
-	// testing the list revers function
+	printf("\n\nList before reversing:\n\n");
+	printList(patientsList, printPatient);
+	
+	printf("\n\nList after reversing:\n\n");
 	patientsList = reverse(patientsList);
+	printList(patientsList, printPatient);
 
+	
+	printf("\n\nList before deletion:\n\n");
+	printList(patientsList, printPatient);
 
-	printf("printing list after it was reversed \n");
-	printList(patientsList,printPatient);
+	deleteList(&patientsList);
 
+	printf("\n\nList after deletion:\n\n");
+	printList(patientsList, printPatient);
 
 	return 0;
 }
