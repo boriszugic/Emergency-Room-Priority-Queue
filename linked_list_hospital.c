@@ -5,7 +5,7 @@ File name is linked_list_hospital.c
  
  Revisions
  Doron Nussbaum 2022 File created
-
+ Boris Zugic    2022 Implementation
  
  
  
@@ -46,30 +46,25 @@ A pointer to the node that was allocated.
 NULL - if the operation was not successful
 
 */
-
 ListNode *insertToList(ListNode **head, PatientInfo *patient)
 
 {	
 	ListNode *p = NULL;
 	
-	// allocate memory for new node
-	p = (ListNode*)malloc(sizeof(ListNode));
-	if (p == NULL) return NULL;
+	p = (ListNode*)malloc(sizeof(ListNode));	// allocate memory for new node
+	if (p == NULL) return NULL;		// return NULL if allocation failed
 
-	// set the data
-	p->patient = *patient;
+	p->patient = *patient;	// set the data
 	
-	// connect list to new node
-	p->next = *head;
+	p->next = *head;	// connect list to new node
 	
-	// connect new node to list
-	*head = p;
+	*head = p;	// connect new node to list
 
-	return p;
+	free(p);	// release memory from p
+	
+	p = NULL;	// good practice
 
-
-
-
+	return *head;	// return pointer to head of new list
 
 }
 
@@ -89,39 +84,21 @@ A pointer to the node that was allocated.
 NULL - if the operation was not successful
 
 */
-
-
 ListNode *insertAfter(ListNode *node, PatientInfo *patient)
 {
-	// if empty list return NULL
-	if (node == NULL) 
-	{
-	return NULL;
-	}
-
-	ListNode *p = NULL;
 	
-	// allocate memory for new node
-	p = (ListNode*)malloc(sizeof(ListNode));
-	if (p == NULL) return NULL;
-
-	// set the data
-	p->patient = *patient;
+	if (node == NULL) return NULL; 	// if empty list return NULL
 	
-	// connect list to new node
-	if (node == NULL)
-	{
-		p->next = NULL;
-		node = p;
-	}
-	else 
-	{
-		p->next = node->next;
+	ListNode *p = NULL; // initialize pointer to NULL
 	
+	p = (ListNode*)malloc(sizeof(ListNode));	// allocate memory for new node
+	if (p == NULL) return NULL;		// if allocation failed return NULL
 
-		// connect new node to list
-		node->next = p;
-	}
+	p->patient = *patient;		// set the data
+	
+	p->next = node->next;	// connect node to list
+	
+	node->next = p;		// connect list to node
 
 	return p;
  
@@ -146,29 +123,23 @@ a pointer to the node that was found.
 NULL - if no node was found or list empty
 
 */
-
-
 ListNode * searchFirstPatientByPriority(ListNode *head, unsigned char priority, PatientInfo *patient)
 
 {
 	ListNode *p = NULL;
 	p = head; 
-	// iterate through list
-	while (p != NULL)
-	{
-			// if current node's patient's priority == priority, return a pointer to current node 
-			if ((p->patient).priorityLevel == priority)
-			{
-				*patient = p->patient;
-				return p;
-			}
-		p = p->next;
-	}
-	return NULL;
-
 	
-  
-
+	while (p != NULL)	// while list is not empty
+	{
+			if ((p->patient).priorityLevel == priority)		// if current patient's priorityLevel == given priority
+			{
+				*patient = p->patient;		// copy data
+				return p;		// return pointer to node containing patient with matching priority
+			}
+		p = p->next;	// advance p to next node
+	}
+	
+	return NULL;
 
 }
 
@@ -188,28 +159,22 @@ a pointer to the node that was found.
 NULL - if no node was found or list empty
 
 */
-
-
 ListNode * searchNextPatient(ListNode *head, int (*findPatient)(PatientInfo *), PatientInfo *patient)
 {
 	ListNode *p = NULL;
 	p = head; 
-	// iterate through list
-	while (p != NULL)
+	
+	while (p != NULL)	// while list is not empty
 	{
-			// if current node's patient's priority == priority, return a pointer to current node 
-			if (findPatient(&(p->patient)) == 0) 
+			if (findPatient(&(p->patient)) == 0) 	// if current patient satisfies the criteria
 			{
-				*patient = p->patient;
-				return p;
+				*patient = p->patient; 		// copy data
+				return p;	// return pointer to node containing patient with satisfied criteria
 			}
-		p = p->next;
+		p = p->next;	// advance to next node in list
 	}
 	
 	return NULL;
-
- 
-
 
 }
 
@@ -231,29 +196,22 @@ return
 1 if node was not deleted or list is empty
 
 */
-
-
 int deleteFromList(ListNode **head, PatientInfo *patient)
 
 {
+	if (head == NULL || *head == NULL) return 1;	// if linked list does not exist or is empty, return 1
+	
 	ListNode *temp = NULL;
 	temp = *head;
-	if (head == NULL || *head == NULL) return 1;
-	if ((*head)->next == NULL) 
-	{
-		*patient = temp->patient;
-		*head = NULL;
-		return 0;
-	}
+
+	*patient = temp->patient;	// copy data
+	*head = (*head)->next;	// disconnect list from node
+	temp->next = NULL;	// disconnect node from list
 	
-	*patient = temp->patient;
-	*head = temp->next;
-	
-	free(temp);
+	free(temp); // release memory
 	temp = NULL;
+	
 	return 0;
-
-
 }
 
 
@@ -277,44 +235,45 @@ return
 1 if node was not found or list is empty 
 
 */
-
-
 int retrieveNextPatientByPriority(ListNode **head, unsigned char priority, PatientInfo *patient)
 
 {
 	ListNode *currNode = NULL, *prevNode = NULL;
 	currNode = *head;
     
-	if (head == NULL || *head == NULL) return 1;
+	if (head == NULL || *head == NULL) return 1; 	// if linked list does not exist or is empty, return 1
 
-
-	while (currNode != NULL)
+	while (currNode != NULL) // while list is not empty
 	{
-		
-		if(currNode->patient.priorityLevel == priority) // if note is found
+		if(currNode->patient.priorityLevel == priority) // if node's patient's priorityLevel matches given priority
 		{
-			if (currNode == *head) 
+			if (currNode == *head) // if node found is head of list
 			{
 				*patient = currNode->patient; // copy data to output
-				*head = currNode->next;	// move head
-				currNode->next = NULL;	
-				free(currNode);
-				currNode = NULL;	// deallocate memory 
-				free(prevNode);
-				prevNode = NULL;
+				*head = (*head)->next;	// disconnect list from node
+				currNode->next = NULL;	// disconnect node from list
 			}
+
 			else
 			{
 				*patient = currNode->patient;	// copy data to output
-				prevNode->next = currNode->next;	// move head
-				currNode->next = NULL;	
-				free(currNode);	
-				currNode = NULL;	// deallocate memory 
+				prevNode->next = currNode->next;	// disconnect list from node
+				currNode->next = NULL;	// disconnect node from list
 			}
+		
+		free(currNode);	// deallocate memory 
+		free(prevNode);
+		
+		currNode = NULL;
+		prevNode = NULL;
+		
 		return 0;
+		
 		}
-		currNode = currNode->next;
+		
 		prevNode = currNode;
+		currNode = currNode->next; // advance to next node in list
+	
 	}
 	
 	return 1;
@@ -347,53 +306,64 @@ The function first finds the patient with the hights criteria by comparing all t
 finding the first patient with the maximum criteria to be treated.  It then deletes the patient and returns
 its information. 
 */
-
-
 int retrieveNextPatientByCriteria(ListNode **head, int (*comparePatients)(PatientInfo *p1, PatientInfo *p2, int currentTime), int currentTime, PatientInfo *patient)
 
 {
-	ListNode *currNode = NULL, *prevNode = NULL, *highestPriority = NULL, *nodeBeforeHighestPriority = NULL;
-	prevNode = *head, highestPriority = *head;
-	currNode = (*head)->next;
-    
+	
+	/* NOTE: node will always be returned unless list is empty */
+
+	ListNode *currNode = NULL, *prevNode = NULL, *highestPriority = NULL, *nodeBeforeHighestPriority = NULL; // initializing all pointers to NULL
+	prevNode = *head, highestPriority = *head; // prevNode keeps track of node before currNode
+	currNode = (*head)->next; // sets currNode to 2nd node in list
 
 	if (head == NULL || *head == NULL) return 1;	// if list does not exist or is empty return 1
 
-
-	while (currNode != NULL)	// iterate through list
+	while (currNode != NULL)	// while list is not empty
 	{
 		
-		if(comparePatients(&(highestPriority->patient), &(currNode->patient), currentTime) < 0) 
+		if(comparePatients(&(highestPriority->patient), &(currNode->patient), currentTime) < 0) 	// if p1 < p2
 		{
-			highestPriority = currNode; // if highest priority patient (initially the first patient in list) is less than the current patient, set highest priority to curr patient
-			nodeBeforeHighestPriority = prevNode; // keep track of node before highest priority patient for deletion purposes
-			//printf("\n%d\n", highestPriority->patient.priorityLevel + 2*(currentTime - highestPriority->patient.arrivalTime));
+			highestPriority = currNode; 	// set highest priority to current patient
+			nodeBeforeHighestPriority = prevNode; // update nodeBeforeHighestPriority
 		}
+		
 		// update prev and curr nodes	
 		prevNode = currNode;	
 		currNode = currNode->next;
 		
 	}	
 			
-	if (highestPriority == *head) // if highest priority patient is the head of the list
+	if (highestPriority == *head) // if highest priority patient is head of list
 	{
 		*patient = highestPriority->patient; // copy data to output
 		*head = highestPriority->next;	// move head
 		highestPriority->next = NULL;	// disconnect head from list
+		
 		free(highestPriority);		// deallocate memory
-		highestPriority = NULL;	// set pointer to NULL
 		free(prevNode);	
+		free(currNode);
+		
+		highestPriority = NULL;		// set pointers to NULL
 		prevNode = NULL;
+		currNode = NULL;
 	}
 			
-	else	// if highest priority patient is not the head of the list
+	else	// if highest priority patient is NOT head of list
 	{
 	
 		*patient = highestPriority->patient;	// copy data to output
-		nodeBeforeHighestPriority->next = highestPriority->next;	// move head
-		highestPriority->next = NULL;	// disconnect from list
+		nodeBeforeHighestPriority->next = highestPriority->next;	// disconnect list from node
+		highestPriority->next = NULL;	// disconnect node from list
+		
+			
 		free(highestPriority);		// deallocate memory
-		currNode = NULL;	// set pointer to NULL
+		free(prevNode);	
+		free(currNode);
+		
+		highestPriority = NULL;		// set pointers to NULL
+		prevNode = NULL;
+		currNode = NULL;
+		
 	}
 		
 		return 0;
@@ -408,23 +378,22 @@ head - the head of the list
 
 
 */
-
-
 void deleteList(ListNode **head)
 {
 	ListNode *currNode = NULL;
 	currNode = *head;
-	while (currNode != NULL)
+	
+	while (currNode != NULL)	// while list is not empty
 	{
 
-		*head = (*head)->next;
-		free(currNode);
-		currNode = *head;
+		*head = (*head)->next;	// disconnect list from node (advance head to list one node shorter)
+		free(currNode);	// release memory of single node
+		currNode = *head;	// advance to next node in list
 		
 	}
 	
-	free(head);
-
+	free(head);	// release memory of linked list
+	head = NULL;
 }
 
 
@@ -437,20 +406,19 @@ input
 head - the head of the list
 myPrint - a function pointer for print the patient information. 
 */
-
-
 void printList(ListNode *head, void (*myPrint)(PatientInfo *patient))
-{
-	// assign function pointer to printPatient function
-	//myPrint = printPatient;
-	
-	// iterate through list using pointer arithmetic
-	while (head != NULL)
+{	
+	ListNode *p = NULL;
+	p = head; 
+
+	while (p != NULL)	// while list not empty
 	{
-		myPrint(&(head->patient));
-		head = head->next;
+		myPrint(&(p->patient));	// print patient
+		p = p->next;	// advance to next node in list
 	}
 
+	free(p); // release memory
+	p = NULL;
 }
 
 
@@ -464,17 +432,19 @@ return
 the number of registered patients
 
 */
-
-
 int numPatientsInEmergency(ListNode *head)
 {
-	int count = 0;
+	int count = 0;	// counting variable
 	ListNode *currNode = head;
-	while (currNode != NULL)
+
+	while (currNode != NULL)	// while list not empty
 	{
-		count++;
-		currNode = currNode->next;
+		count++;	// increment count
+		currNode = currNode->next;	// advance to next node
 	}
+
+	free(currNode); // release memory
+	currNode = NULL;
 
 	return count;
 
@@ -492,22 +462,22 @@ the number of patients with a matching priority
 
 
 */
-
-
 int countPatients(ListNode *head, unsigned char priority)
 {
-	
-	if (head == NULL) return 0;
-
+	ListNode *currNode = head;
 	int count = 0;
-	while (head != NULL)
+
+	while (currNode != NULL)	// while list is not empty
 	{
 
-		if (head->patient.priorityLevel == priority) count++;
+		if (currNode->patient.priorityLevel == priority) count++;	// if priority level of current patient matches given priority. increment count
 
-		head = head->next;
+		currNode = currNode->next;	// advance to next node in list
 	}
 	
+	free(currNode);	// release memory
+	currNode = NULL;
+
 	return count;
 }
 
@@ -592,7 +562,6 @@ Ouput
 head - the head of the list where all patients with priorityLevel < priority are removed 
 
 */
-
 int releasePatients(ListNode **head, unsigned char priority)
 
 /* code */
@@ -614,16 +583,13 @@ Purpose: prints all the patients' records in the list in reverse order using rec
 input
 head - the head of the list
 */
-
-
 void printListReverse(ListNode *head, void (*myPrint)(PatientInfo *patient))
 {
-	if (head == NULL) return;
+	if (head == NULL) return; // if list is empty return
  
-	printListReverse(head->next, printPatient);
-	myPrint(&(head->patient));
+	printListReverse(head->next, printPatient);	// recursive call
+	myPrint(&(head->patient));	// print patient
 	
- 
 }
 
 
@@ -649,17 +615,19 @@ head - the head of the list
 Returns:
 the head of the new list
 */
-
 ListNode *reverse(ListNode *head)
 
 {
-	
-	if (head == NULL || head->next == NULL) return head;
-	
+	ListNode *currNode = head;
 
-	ListNode *temp = reverse(head->next);
-	head->next->next = head;
-	head->next = NULL;
+	if (currNode == NULL || currNode->next == NULL) return currNode;	// if list is empty or current node is last node in list, return current node
+	
+	ListNode *temp = reverse(currNode->next);
+	currNode->next->next = currNode;
+	currNode->next = NULL;
+
+	free(currNode);
+	currNode = NULL;
 
 	return temp;
 

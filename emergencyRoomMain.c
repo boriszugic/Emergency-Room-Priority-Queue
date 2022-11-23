@@ -98,12 +98,16 @@ int main(int argc, char* argv[])
 		printf("There are %d patients with priority %d \n", countPatients(patientsList, i), i);
 	}
 
+	printf("\n\nPatient to be treated next by priority 6:\n\n");
+	retrieveNextPatientByPriority(&patientsList, 6, &patient);
+	printPatient(&patient);
+
 	// testing priority queue by higher priority
 	printf("\n\nPatient to be treated next by maximum priority\n\n");
 	retrieveNextPatientByCriteria(&patientsList, comparePatients, arrivalTime, &patient);
 	printPatient(&patient);
+	
 	/*
-
 	for (i = 0; i <5; i++) {
 		arrivalTime++;
 		rc = retrieveNextPatientByCriteria(&patientsList, comparePatients, arrivalTime, &patient);
