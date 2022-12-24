@@ -1,5 +1,3 @@
-** BONUS FUNCTIONS: reverseList and printListReverse **
-
 Purpose of software: to manage patients arriving to ER by assisting the doctors and nurses to decide which patient to treat next.
 Revision information:
     Doron Nussbaum 2022 Initial Code
